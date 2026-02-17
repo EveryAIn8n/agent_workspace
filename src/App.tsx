@@ -2,7 +2,10 @@ import { ConvexProvider, ConvexReactClient } from "convex/react";
 import { Chat } from "./components/Chat";
 import { Kanban } from "./components/Kanban";
 
-const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL);
+const convexUrl = import.meta.env.VITE_CONVEX_URL;
+console.log("Convex URL:", convexUrl);
+
+const convex = new ConvexReactClient(convexUrl || "");
 
 function App() {
   return (

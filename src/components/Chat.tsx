@@ -11,27 +11,22 @@ export function Chat() {
   const sendMessage = useMutation(api.messages.send);
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log("Submit clicked, input:", input);
     e.preventDefault();
     if (!input.trim()) return;
     
-    await sendMessage({
-      body: input,
-      author: "User",
-      sessionId,
-    });
-    
-    setInput("");
-    
-    // Simulate agent response removed to let the bridge handle it
-    /*
-    setTimeout(async () => {
+    try {
+      console.log("Attempting to send message to Convex...");
       await sendMessage({
-        body: "I am your agent. How can I help with your Kanban board today?",
-        author: "Agent",
+        body: input,
+        author: "User",
         sessionId,
       });
-    }, 1000);
-    */
+      console.log("Message sent successfully");
+      setInput("");
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
   };
 
   return (

@@ -1,35 +1,53 @@
-import { ConvexProvider, ConvexReactClient } from "convex/react";
-import { Chat } from "./components/Chat";
-import { Kanban } from "./components/Kanban";
+import { useState } from "react";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../convex/_generated/api";
 
-const convexUrl = import.meta.env.VITE_CONVEX_URL;
-console.log("Convex URL:", convexUrl);
+export default function App() {
+  const [input, setInput] = useState("");
+  const sessionId = "default-session";
+  const messages = useQuery(api.messages.list, { sessionId }) || [];
+  const sendMessage = useMutation(api.messages.send);
 
-const convex = new ConvexReactClient(convexUrl || "");
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+    
+    console.log("Sending:", input);
+    await sendMessage({
+      body: input,
+      author: "User",
+      sessionId,
+    });
+    setInput("");
+  };
 
-function App() {
   return (
-    <ConvexProvider client={convex}>
-      <div className="flex h-screen w-screen overflow-hidden text-slate-50 bg-slate-950 font-sans">
-        {/* Left Sidebar: Chat */}
-        <Chat />
-
-        {/* Main Content: Kanban */}
-        <main className="flex-1 flex flex-col min-w-0">
-          <header className="h-14 border-b border-slate-800 flex items-center px-6 bg-slate-950/50 backdrop-blur-sm z-10">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500" />
-              <div className="w-3 h-3 rounded-full bg-yellow-500" />
-              <div className="w-3 h-3 rounded-full bg-green-500" />
+    <div style={{ padding: "20px", fontFamily: "sans-serif", backgroundColor: "#0f172a", color: "white", height: "100vh" }}>
+      <h1>Agent Chat (Simple)</h1>
+      
+      <div style={{ border: "1px solid #334155", height: "70vh", overflowY: "auto", marginBottom: "20px", padding: "10px", borderRadius: "8px" }}>
+        {messages.map((msg: any) => (
+          <div key={msg._id} style={{ margin: "10px 0", textAlign: msg.author === "User" ? "right" : "left" }}>
+            <div style={{ display: "inline-block", padding: "8px 12px", borderRadius: "12px", backgroundColor: msg.author === "User" ? "#2563eb" : "#1e293b" }}>
+              <small style={{ opacity: 0.5, display: "block" }}>{msg.author}</small>
+              {msg.body}
             </div>
-            <span className="ml-6 text-sm font-medium text-slate-400">Agent Workspace / v1.0</span>
-          </header>
-          
-          <Kanban />
-        </main>
+          </div>
+        ))}
       </div>
-    </ConvexProvider>
+
+      <form onSubmit={handleSubmit} style={{ display: "flex", gap: "10px" }}>
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Type 'Hi'..."
+          style={{ flex: 1, padding: "10px", borderRadius: "4px", border: "1px solid #334155", backgroundColor: "#1e293b", color: "white" }}
+        />
+        <button type="submit" style={{ padding: "10px 20px", backgroundColor: "#2563eb", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>
+          Send
+        </button>
+      </form>
+    </div>
   );
 }
-
-export default App;

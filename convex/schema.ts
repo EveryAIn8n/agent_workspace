@@ -7,13 +7,4 @@ export default defineSchema({
     author: v.string(),
     sessionId: v.string(),
   }),
-  tasks: defineTable({
-    title: v.string(),
-    status: v.union(
-      v.literal("todo"),
-      v.literal("in-progress"),
-      v.literal("done")
-    ),
-    order: v.number(),
-  }),
 });

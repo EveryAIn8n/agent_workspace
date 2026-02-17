@@ -10,7 +10,6 @@
 
 import type * as actions from "../actions.js";
 import type * as messages from "../messages.js";
-import type * as tasks from "../tasks.js";
 
 import type {
   ApiFromModules,
@@ -21,7 +20,6 @@ import type {
 declare const fullApi: ApiFromModules<{
   actions: typeof actions;
   messages: typeof messages;
-  tasks: typeof tasks;
 }>;
 
 /**

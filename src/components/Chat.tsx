@@ -22,7 +22,8 @@ export function Chat() {
     
     setInput("");
     
-    // Simulate agent response
+    // Simulate agent response removed to let the bridge handle it
+    /*
     setTimeout(async () => {
       await sendMessage({
         body: "I am your agent. How can I help with your Kanban board today?",
@@ -30,6 +31,7 @@ export function Chat() {
         sessionId,
       });
     }, 1000);
+    */
   };
 
   return (

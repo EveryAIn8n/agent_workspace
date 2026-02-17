@@ -23,7 +23,8 @@ export default function App() {
 
   return (
     <div style={{ padding: "20px", fontFamily: "sans-serif", backgroundColor: "#0f172a", color: "white", height: "100vh" }}>
-      <h1>Agent Chat (Simple)</h1>
+      <h1>Agent Chat (v1.0.1)</h1>
+      <p style={{ fontSize: "12px", color: "#64748b" }}>Build Triggered: {new Date().toISOString()}</p>
       
       <div style={{ border: "1px solid #334155", height: "70vh", overflowY: "auto", marginBottom: "20px", padding: "10px", borderRadius: "8px" }}>
         {messages.map((msg: any) => (

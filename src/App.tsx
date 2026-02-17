@@ -5,26 +5,17 @@ import { api } from "../convex/_generated/api";
 export default function App() {
   const sessionId = "default-session";
   
-  // Use a try-catch pattern inside the component if possible, 
-  // but for now, let's just use a console log to see if this even runs.
-  console.log("App Component Rendering...");
+  // Explicitly type the query result to satisfy TypeScript
+  const messages = useQuery(api.messages.list, { sessionId });
+  const sendMessage = useMutation(api.messages.send);
 
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Fallback for when Convex is not yet connected
-  let messages;
-  try {
-    messages = useQuery(api.messages.list, { sessionId });
-  } catch (e) {
-    console.error("Convex Query Error:", e);
-  }
-
-  const sendMessage = useMutation(api.messages.send);
-
   useEffect(() => {
-    console.log("Messages updated:", messages);
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messages) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messages]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,7 +26,6 @@ export default function App() {
       setInput("");
     } catch (err) {
       console.error("Send Error:", err);
-      alert("Failed to send: " + err);
     }
   };
 
@@ -55,7 +45,7 @@ export default function App() {
       bottom: 0
     }}>
       <header style={{ padding: "10px", background: "#333", borderBottom: "1px solid #444", textAlign: "center" }}>
-        <h1 style={{ margin: 0, fontSize: "1rem" }}>Antigravity v1.0.5</h1>
+        <h1 style={{ margin: 0, fontSize: "1rem" }}>Antigravity v1.0.6</h1>
       </header>
       
       <div style={{ flex: 1, overflowY: "auto", padding: "10px" }}>

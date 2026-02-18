@@ -13,7 +13,19 @@ export const list = query({
   handler: async (ctx, args) => {
     return await ctx.db
       .query("messages")
-      .filter((q) => q.eq(q.field("sessionId"), args.sessionId))
+      .withIndex("by_sessionId", (q) => q.eq("sessionId", args.sessionId))
       .collect();
+  },
+});
+
+export const getContext = query({
+  args: { sessionId: v.string(), count: v.optional(v.number()) },
+  handler: async (ctx, args) => {
+    const count = args.count ?? 20;
+    return await ctx.db
+      .query("messages")
+      .withIndex("by_sessionId", (q) => q.eq("sessionId", args.sessionId))
+      .order("desc")
+      .take(count);
   },
 });

@@ -13,18 +13,30 @@ export const handleUserMessage = action({
       sessionId: args.sessionId,
     });
 
-    // 2. Generate a response using OpenAI
+    // 2. Fetch the conversation context (the last 20 messages)
+    const history = await ctx.runQuery(api.messages.getContext, {
+      sessionId: args.sessionId,
+      count: 20,
+    });
+
+    // 3. Format history for OpenAI
+    // We reverse history because it's fetched in 'desc' order (newest first)
+    // but LLMs expect chronological order (oldest first).
+    const chatMessages = history.reverse().map((msg) => ({
+      role: msg.author === "Antigravity" ? "assistant" : "user",
+      content: msg.body,
+    }));
+
+    // 4. Generate a response using OpenAI
     let responseBody: string;
     try {
-      // Pass the current message as a single user message.
-      // OpenAI helper will add the system prompt as instructed.
-      responseBody = await chatCompletion([{ role: "user", content: args.body }]);
+      responseBody = await chatCompletion(chatMessages);
     } catch (error) {
       console.error("OpenAI Integration Error:", error);
       responseBody = "I'm sorry, I'm having trouble connecting to my brain right now. Please try again later. 🧠❌";
     }
 
-    // 3. Save the agent response
+    // 5. Save the agent response
     await ctx.runMutation(api.messages.send, {
       body: responseBody,
       author: "Antigravity",

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useQuery, useMutation } from "convex/react";
+import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../convex/_generated/api";
 
 export default function App() {
@@ -7,7 +7,7 @@ export default function App() {
   
   // Explicitly type the query result to satisfy TypeScript
   const messages = useQuery(api.messages.list, { sessionId });
-  const sendMessage = useMutation(api.messages.send);
+  const handleUserMessage = useAction(api.actions.handleUserMessage);
 
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -21,11 +21,13 @@ export default function App() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
+    const currentInput = input;
+    setInput(""); // Optimistic clear
     try {
-      await sendMessage({ body: input, author: "User", sessionId });
-      setInput("");
+      await handleUserMessage({ body: currentInput, author: "User", sessionId });
     } catch (err) {
       console.error("Send Error:", err);
+      setInput(currentInput); // Rollback on error
     }
   };
 

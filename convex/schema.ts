@@ -6,5 +6,5 @@ export default defineSchema({
     body: v.string(),
     author: v.string(),
     sessionId: v.string(),
-  }),
+  }).index("by_sessionId", ["sessionId"]),
 });
